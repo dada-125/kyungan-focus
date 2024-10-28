@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Calendar</title>
+    <link href='https://unpkg.com/@fullcalendar/core/main.css' rel='stylesheet' />
+    <link href='https://unpkg.com/@fullcalendar/daygrid/main.css' rel='stylesheet' />
+    <style>
+        /* 스타일 추가 (옵션) */
+        #calendar {
+            max-width: 900px;
+            margin: 40px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>내 캘린더</h1>
+    <div id='calendar'></div>
+    
+    <script src='https://unpkg.com/@fullcalendar/core/main.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/daygrid/main.js'></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                plugins: [ 'dayGrid' ],
+                initialView: 'dayGridMonth',
+                validRange: {
+                    start: '2024-08-01', // 시작 날짜
+                    end: '2025-02-28'   // 종료 날짜
+                },
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    fetch(`https://www.googleapis.com/calendar/v3/calendars/aaa06ee85282c063ee13fa2d48c2dee57271dfa50f44cb1d1e1fc64c8eec57fa%40group.calendar.google.com/events?key=AIzaSyB-PqWQBLr3Y_SyS6bQJr7M5mIBTUeW00A`)
+                        .then(response => response.json())
+                        .then(data => {
+                            let events = data.items.map(event => ({
+                                title: event.summary,
+                                start: event.start.date || event.start.dateTime,
+                                end: event.end.date || event.end.dateTime
+                            }));
+                            successCallback(events);
+                        })
+                        .catch(error => failureCallback(error));
+                }
+            });
+
+            calendar.render();
+        });
+    </script>
+</body>
+</html>
